@@ -9,6 +9,7 @@ from subprocess import CompletedProcess
 from pathlib import Path
 from datetime import datetime
 from logging import getLogger, Logger, StreamHandler, Formatter, INFO
+from argparse import ArgumentParser
 
 PYPROJECT: str = '''[tool.poetry]
 name = "{PROJECT}"
@@ -39,7 +40,7 @@ files = ["{PACKAGE}/__init__.py"]
 
 [tool.black]
 line-length = 79
-include = "\\.pyi?$"
+include = "\\\\.pyi?$"
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -366,18 +367,21 @@ def linkcode_resolve(
 
 
 DEV_PACKAGES: List[Dict[str, str]] = [
-    {"name": "black"}
-    {"name": "flake8", "version": "4.0.1"}
-    {"name": "coverage"}
-    {"name": "mypy"}
-    {"name": "pytest"}
-    {"name": "pytest-flake8"}
-    {"name": "pytest-cov"}
-    {"name": "pytest-mypy"}
-    {"name": "sphinx"}
-    {"name": "sphinx-rtd-theme", "version": "1.2.0rc2"}
-    {"name": "sphinx-pyproject-poetry", "git": "https://github.com/tetutaro/sphinx_pyproject_poetry.git"}
-    {"name": "python-lsp-server"}
+    {"name": "black"},
+    {"name": "flake8", "version": "4.0.1"},
+    {"name": "coverage"},
+    {"name": "mypy"},
+    {"name": "pytest"},
+    {"name": "pytest-flake8"},
+    {"name": "pytest-cov"},
+    {"name": "pytest-mypy"},
+    {"name": "sphinx"},
+    {"name": "sphinx-rtd-theme", "version": "1.2.0rc2"},
+    {
+        "name": "sphinx-pyproject-poetry",
+        "git": "https://github.com/tetutaro/sphinx_pyproject_poetry.git",
+    },
+    {"name": "python-lsp-server"},
 ]
 
 
@@ -401,8 +405,8 @@ class Project:
         project_dir: str = cwd.name
         self.project = project_dir.replace("_", "-")
         self.package = project_dir.replace("-", "_")
-        self.logger.info(f"project = {self.project}")
-        self.logger.info(f"package = {self.package}")
+        self.logger.debug(f"project = {self.project}")
+        self.logger.debug(f"package = {self.package}")
         return
 
     def _get_name_from_gitconfig(self: Project) -> None:
@@ -425,7 +429,7 @@ class Project:
                 self.name = name
             else:
                 self.name = f"{name}<{email}>"
-        self.logger.info(f"name = {self.name}")
+        self.logger.debug(f"name = {self.name}")
         return
 
     def _get_repository_from_config(self: Project) -> None:
@@ -448,22 +452,7 @@ class Project:
                 self.repository = url
             else:
                 self.repository = ""
-        self.logger.info(f"repository = {self.repository}")
-        return
-
-    def _create_pyproject(self: Project) -> None:
-        year = datetime.now().strftime("%Y")
-        pyproject: Path = Path.cwd().joinpath("pyproject.toml")
-        with open(pyproject, "wt") as wf:
-            wf.write(
-                PYPROJECT.format(
-                    PROJECT=self.project,
-                    PACKAGE=self.package,
-                    REPOSITORY=self.repository,
-                    PYVERSION=self.pyversion,
-                    YEAR=year,
-                )
-            )
+        self.logger.debug(f"repository = {self.repository}")
         return
 
     def _get_pyenv_versions(self: Project) -> List[str]:
@@ -485,24 +474,7 @@ class Project:
         nvs = sorted(nvs, key=lambda x: (x[0], x[1], x[2]), reverse=True)
         return ".".join([str(x) for x in nvs[0]])
 
-    @staticmethod
-    def _invoke_cmnd(cmnd: str) -> None:
-        cmnds = cmnd.split()
-        res: CompletedProcess = subprocess.run(cmnd.split(), check=True)
-        if res.returncode != 0:
-            raise SystemError(f"command ({cmnd}) failed")
-        return
-
-    @staticmethod
-    def _invoke_cmnd_ignore_error(cmnd: str) -> None:
-        cmnds = cmnd.split()
-        try:
-            res: CompletedProcess = subprocess.run(cmnd.split(), check=True)
-        except Exception:
-            pass
-        return
-
-    def create_python_environment(self: Project) -> None:
+    def create_pyproject(self: Project) -> None:
         virtualenvs: List[str] = self._get_pyenv_versions()
         python3_venvs: List[str] = list()
         for venv in virtualenvs:
@@ -512,17 +484,32 @@ class Project:
             raise SystemError("python3 virtuanenv is not found")
         latest_venv = self._get_largest_version(python3_venvs)
         self.pyversion = ".".join(x for x in latest_venv.split(".")[:2])
-        self._create_pyproject()
-        self._invoke_cmnd(cmnd=f"pyenv shell {latest_venv}")
-        self._invoke_cmnd(cmnd="poetry shell")
-        virtualenvs = self._get_pyenv_versions()
+        year = datetime.now().strftime("%Y")
+        pyproject: Path = Path.cwd().joinpath("pyproject.toml")
+        with open(pyproject, "wt") as wf:
+            wf.write(
+                PYPROJECT.format(
+                    PROJECT=self.project,
+                    PACKAGE=self.package,
+                    NAME=self.name,
+                    REPOSITORY=self.repository,
+                    PYVERSION=self.pyversion,
+                    YEAR=year,
+                )
+            )
+        print(latest_venv)
+        return
+
+    def get_project_python(self: Project) -> None:
+        virtualenvs: List[str] = self._get_pyenv_versions()
         local_venv: str = ""
         for venv in virtualenvs:
             if venv.startswith(self.project):
                 local_venv = venv
                 break
-        self._invoke_cmnd(cmnd=f"pyenv local {local_venv}")
-        self._invoke_cmnd(cmnd="pip install --upgrade pip setuptools wheel")
+        if local_venv == "":
+            raise SystemError("")
+        print(local_venv)
         return
 
     def create_basic_files(self: Project) -> None:
@@ -549,11 +536,9 @@ class Project:
         test_dir.mkdir(exist_ok=True)
         test_init: Path = test_dir.joinpath("__init__.py")
         test_init.touch()
-        doc_dir: Path = Path.cwd().joinpath("docs")
-        doc_dir.mkdir(exist_ok=True)
         return
 
-    def install_dev_packages(self: Project) -> None:
+    def get_dev_packages(self: Project) -> None:
         packages: List[str] = list()
         for pkg in DEV_PACKAGES:
             git: Opional[str] = pkg.get("git")
@@ -567,28 +552,26 @@ class Project:
             if version is not None:
                 name += f"={version}"
             packages.append(name)
-        if len(packages) == 0:
-            return
-        cmnd = f'poetry add --group dev {" ".join(packages)}'
-        self._invoke_cmnd(cmnd=cmnd)
-        self._invoke_cmnd_ignore_error(cmnd="rehash")
+        print(" ".join(packages))
+        return
+
+    def get_sphinx_command(self: Project) -> None:
+        base: Path = Path.cwd()
+        docs: Path = base.joinpath("docs")
+        docs.mkdir(exist_ok=True)
+        cmnd: str = (
+            "sphinx-quickstart --quiet --sep --no-batchfile "
+            "--ext-autodoc --project {self.project} --author dummy"
+        )
+        print(cmnd)
         return
 
     def setup_sphinx(self: Project) -> None:
         base: Path = Path.cwd()
         docs: Path = base.joinpath("docs")
-        os.chdir(docs)
-        cmnd: str = (
-            "sphinx-quickstart --quiet --sep --no-batchfile "
-            "--ext-autodoc --project {self.project} --author dummy"
-        )
-        self._invoke_cmnd(cmnd=cmnd)
-        os.chdir(base)
         makefile: Path = docs.joinpath("Makefile")
         with open(makefile, "wt") as wf:
-            wf.write(DOCS_MAKEFILE.format(
-                PACKAGE=self.package
-            ))
+            wf.write(DOCS_MAKEFILE.format(PACKAGE=self.package))
         branch: str = ""
         if "github" in self.repository:
             branch = "blob/main"
@@ -596,27 +579,52 @@ class Project:
             branch = "-/tree/main"
         conf_py: Path = docs.joinpath("source/conf.py")
         with open(conf_py, "wt") as wf:
-            wf.write(DOCS_CONF_PY.format(
-                PACKAGE=self.package,
-                BRANCH=branch,
-            ))
+            wf.write(
+                DOCS_CONF_PY.format(
+                    PACKAGE=self.package,
+                    BRANCH=branch,
+                )
+            )
         return
 
 
 def main() -> None:
-    logger = getLogger(__file__)
+    # parser arguments
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument(
+        "action",
+        choices=[
+            "create_pyproject",
+            "project_python",
+            "basic_files",
+            "get_dev_packages",
+            "get_sphinx_command",
+            "setup_sphinx",
+        ],
+    )
+    args = parser.parse_args()
+    # create logger
+    logger: Logger = getLogger(__file__)
     logger.setLevel(INFO)
-    formatter = Formatter("%(asctime)s: %(levelname)s: %(message)s")
-    handler = StreamHandler()
+    formatter: Formatter = Formatter("%(asctime)s: %(levelname)s: %(message)s")
+    handler: StreamHandler = StreamHandler()
     handler.setLevel(INFO)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     try:
-        project = Project(logger=logger)
-        project.create_python_environment()
-        project.create_basic_files()
-        project.install_dev_packages()
-        project.setup_sphinx()
+        project: Project = Project(logger=logger)
+        if args.action == "create_pyproject":
+            project.create_pyproject()
+        elif args.action == "project_python":
+            project.get_project_python()
+        elif args.action == "create_basic_files":
+            project.create_basic_files()
+        elif args.action == "get_dev_packages":
+            project.get_dev_packages()
+        elif args.action == "get_sphinx_command":
+            project.get_sphinx_command()
+        elif args.action == "setup_sphinx":
+            project.setup_sphinx()
     except Exception as e:
         print(f"{e}")
     return

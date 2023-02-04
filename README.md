@@ -102,8 +102,8 @@ eval "$(pyenv virtualenv-init -)"
     * `git clone <repository_git_url>`
     * current directory の下に `sample_project` というディレクトリが出来る
 * clone したディレクトリ（`sample_project`）に移動
-* この repository の setup.py を叩く
-    * `> curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup.py | python3 -`
+* この repository の setup.sh を叩く
+    * `>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup.sh)"`
 
 ### flake8 の設定のみが .flake8 に書いてある件について
 
@@ -145,11 +145,11 @@ eval "$(pyenv virtualenv-init -)"
     * `> poetry version`
     * 先頭の `v` を除いたバージョン番号が得られる
 
-## ユニットテストおよび文法チェック・型チェックを行う
+### ユニットテストおよび文法チェック・型チェックを行う
 
 * `> make tests`
 
-## 自動生成されるドキュメントを更新する
+### 自動生成されるドキュメントを更新する
 
 * `> make docs`
 
@@ -162,8 +162,8 @@ eval "$(pyenv virtualenv-init -)"
     * git clone する
     * current directory の下に `sample_project` というディレクトリが出来る
 * clone したディレクトリ（`sample_project`）に移動
-* この repository の update.py を叩く
-    * `> curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/update.py | python3 -`
+* この repository の update.sh を叩く
+    * `>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/update.sh)"`
 
 # 途中から poetry を使う
 
