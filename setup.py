@@ -66,18 +66,18 @@ clean: clean-python clean-package clean-tests clean-system
 
 .PHONY: clean-python
 clean-python:
-	@find . -name '*.pyc' -exec rm -f {} +
-	@find . -name '*.pyo' -exec rm -f {} +
-	@find . -name '*.pyd' -exec rm -f {} +
-	@find . -name '__pycache__' -exec rm -rf {} +
+	@find . -name '*.pyc' -exec rm -f {{}} +
+	@find . -name '*.pyo' -exec rm -f {{}} +
+	@find . -name '*.pyd' -exec rm -f {{}} +
+	@find . -name '__pycache__' -exec rm -rf {{}} +
 
 .PHONY: clean-package
 clean-package:
 	@rm -rf dist/
 	@rm -rf build/
 	@rm -rf .eggs/
-	@find . -name '*.egg-info' -exec rm -rf {} +
-	@find . -name '*.egg' -exec rm -rf {} +
+	@find . -name '*.egg-info' -exec rm -rf {{}} +
+	@find . -name '*.egg' -exec rm -rf {{}} +
 
 .PHONY: clean-tests
 clean-tests:
@@ -89,8 +89,8 @@ clean-tests:
 
 .PHONY: clean-system
 clean-system:
-	@find . -name '*~' -exec rm -f {} +
-	@find . -name '.DS_Store' -exec rm -f {} +
+	@find . -name '*~' -exec rm -f {{}} +
+	@find . -name '.DS_Store' -exec rm -f {{}} +
 
 .PHONY: requirements
 requirements:
@@ -115,7 +115,7 @@ install:
 
 .PHONY: uninstall
 uninstall:
-	pip uninstall -y ${PROJECT}
+	pip uninstall -y {PROJECT}
 
 .PHONY: docs
 docs:
@@ -543,7 +543,7 @@ class Project:
         for pkg in DEV_PACKAGES:
             git: Opional[str] = pkg.get("git")
             if git is not None:
-                packages.append(git)
+                packages.append(f'"{git}"')
                 continue
             name: Optional[str] = pkg.get("name")
             if name is None:
@@ -596,7 +596,7 @@ def main() -> None:
         choices=[
             "create_pyproject",
             "project_python",
-            "basic_files",
+            "create_basic_files",
             "get_dev_packages",
             "get_sphinx_command",
             "setup_sphinx",
