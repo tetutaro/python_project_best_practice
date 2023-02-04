@@ -361,7 +361,7 @@ def linkcode_resolve(
     elif not filename.endswith(".py"):
         filename += ".py"
     return (
-        f"{{config.repository}}/{BRANCH}/{{filename}}"
+        f"{{config.repository}}{BRANCH}/{{filename}}"
     )
 """
 
@@ -574,9 +574,11 @@ class Project:
             wf.write(DOCS_MAKEFILE.format(PACKAGE=self.package))
         branch: str = ""
         if "github" in self.repository:
-            branch = "blob/main"
+            branch = "/blob/main"
         elif "gitlab" in self.repository:
-            branch = "-/tree/main"
+            branch = "/-/tree/main"
+        else:
+            branch = base.as_uri()
         conf_py: Path = docs.joinpath("source/conf.py")
         with open(conf_py, "wt") as wf:
             wf.write(
@@ -585,6 +587,22 @@ class Project:
                     BRANCH=branch,
                 )
             )
+        return
+
+    def get_update_files(self: Project) -> None:
+        update_files: List[str] = [
+            "pyproject.toml",
+            "Makefile",
+            ".flake8",
+            ".gitignore",
+            f"{self.project}",
+            "tests",
+            "docs",
+        ]
+        if self.repository != "":
+            print(" ".join(update_files))
+        else:
+            print("")
         return
 
 
@@ -600,6 +618,7 @@ def main() -> None:
             "get_dev_packages",
             "get_sphinx_command",
             "setup_sphinx",
+            "get_update_files",
         ],
     )
     args = parser.parse_args()
@@ -625,6 +644,8 @@ def main() -> None:
             project.get_sphinx_command()
         elif args.action == "setup_sphinx":
             project.setup_sphinx()
+        elif args.action == "get_update_files":
+            project.get_update_files()
     except Exception as e:
         print(f"{e}")
     return
