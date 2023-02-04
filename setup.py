@@ -420,7 +420,7 @@ class Project:
             elif email == "":
                 self.name = name
             else:
-                self.name = f"{name}<{email}>"
+                self.name = f"{name} <{email}>"
         self.logger.debug(f"name = {self.name}")
         return
 
