@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "python-project-best-practice"
+version = "0.1.0"
+description = "Pythonを使った開発環境構築のベストプラクティス"
+authors = ["Tetsutaro Maruyama <tetsutaro.maruyama@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+flake8 = "4.0.1"
+python-lsp-server = "^1.7.1"
+
+[tool.black]
+line-length = 79
+include = "\\.pyi?$"
