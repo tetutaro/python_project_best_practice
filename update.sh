@@ -24,21 +24,7 @@ pyenv_version=$(python3 ${setup_py} project_python)
 pyenv local ${pyenv_version}
 pyenv shell ${pyenv_version}
 pip install --upgrade pip setuptools wheel
-python3 ${setup_py} create_basic_files
-dev_packages=$(python3 ${setup_py} get_dev_packages)
-echo ${dev_packages}
-poetry add --group dev ${dev_packages}
-quick_cmnd=$(python3 ${setup_py} get_sphinx_command)
-cd docs >/dev/null 2>&1
-${quick_cmnd}
-cd - >/dev/null 2>&1
-python3 ${setup_py} setup_sphinx
-update_files=$(python3 ${setup_py} get_update_files)
-if [[ "${update_files}" != "" ]]; then
-    git add ${update_files}
-    git commit -m "project start"
-    git push
-fi
+poetry install
 delete_setup_py
 
 set +eu
