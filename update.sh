@@ -5,7 +5,7 @@ set -eu
 update_py="_update_project.py"
 
 function download_update_py () {
-    curl -o ${update_py} "https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/update.py"
+    curl -fsSL -o ${update_py} "https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/update.py"
 }
 
 function delete_update_py () {

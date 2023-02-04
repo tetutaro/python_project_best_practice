@@ -5,7 +5,7 @@ set -eu
 setup_py="_setup_project.py"
 
 function download_setup_py () {
-    curl -o ${setup_py} "https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup.py"
+    curl -fsSL -o ${setup_py} "https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup.py"
 }
 
 function delete_setup_py () {
