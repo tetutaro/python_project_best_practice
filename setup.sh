@@ -27,6 +27,11 @@ dev_packages=$(python3 setup.py get_dev_packages)
 echo ${dev_packages}
 poetry add --group dev ${dev_packages}
 quick_cmnd=$(python3 setup.py get_sphinx_command)
-cd docs && ${quick_cmnd}
+cd docs >/dev/null 2>&1
+${quick_cmnd}
+cd - >/dev/null 2>&1
 python3 setup.py setup_sphinx
 delete_setup_py
+source deactivate
+cd ~ >/dev/null 2>&1
+cd - >/dev/null 2>&1

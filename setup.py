@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 from __future__ import annotations
-from typing import List, Tuple
+from typing import List, Dict, Optional
 import os
 import re
 import subprocess
@@ -59,7 +59,7 @@ exclude_patterns = []
 language = "ja"
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
-'''
+'''  # noqa: E501
 
 MAKEFILE: str = """.PHONY: clean
 clean: clean-python clean-package clean-tests clean-system
@@ -148,7 +148,7 @@ ifdef VERSION
 else
 	@echo "Usage: make version-up VERSION=vX.X.X"
 endif
-"""
+"""  # noqa: E101, E501, W191
 
 GITIGNORE: str = """# Byte-compiled / optimized / DLL files
 __pycache__/
@@ -286,7 +286,7 @@ poetry.lock
 
 # OS settings
 .DS_Store
-"""
+"""  # noqa: E501
 
 FLAKE8: str = """[flake8]
 exclude = __pycache__,*.py[cod],build,dist
@@ -295,7 +295,7 @@ max-complexity = 15
 per-file-ignores =
     *.pyi: E302, E501
 extend-ignore = E203
-"""
+"""  # noqa: E191
 
 INIT_PY: str = """#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
@@ -332,7 +332,7 @@ sphinx-apidoc:
 .PHONY: html
 html: sphinx-apidoc
 	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)
-"""
+"""  # noqa: E101, W191
 
 DOCS_CONF_PY: str = """#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
@@ -342,7 +342,7 @@ import sys
 
 from sphinx_pyproject_poetry import SphinxConfig
 
-sys.path.insert(0, os.path.abspath("../../backend"))
+sys.path.insert(0, os.path.abspath("../../{PACKAGE}"))
 config: SphinxConfig = SphinxConfig("../../pyproject.toml", globalns=globals())
 project: str = config.name
 
@@ -541,9 +541,9 @@ class Project:
     def get_dev_packages(self: Project) -> None:
         packages: List[str] = list()
         for pkg in DEV_PACKAGES:
-            git: Opional[str] = pkg.get("git")
+            git: Optional[str] = pkg.get("git")
             if git is not None:
-                packages.append(f'"{git}"')
+                packages.append(f"git+{git}")
                 continue
             name: Optional[str] = pkg.get("name")
             if name is None:
@@ -561,7 +561,7 @@ class Project:
         docs.mkdir(exist_ok=True)
         cmnd: str = (
             "sphinx-quickstart --quiet --sep --no-batchfile "
-            "--ext-autodoc --project {self.project} --author dummy"
+            f"--ext-autodoc --project {self.project} --author dummy"
         )
         print(cmnd)
         return
