@@ -386,27 +386,19 @@ DEV_PACKAGES: List[Dict[str, str]] = [
 
 
 class Project:
-    project: str
-    package: str
-    name: str
-    repository: str
-    pyversion: str
+    project: str = ""
+    package: str = ""
+    name: str = ""
+    repository: str = ""
+    pyversion: str = ""
     logger: Logger
 
     def __init__(self: Project, logger: Logger) -> None:
         self.logger = logger
-        self._get_project_package_from_cwd()
         self._get_name_from_gitconfig()
         self._get_repository_from_config()
-        return
-
-    def _get_project_package_from_cwd(self: Project) -> None:
-        cwd: Path = Path.cwd()
-        project_dir: str = cwd.name
-        self.project = project_dir.replace("_", "-")
-        self.package = project_dir.replace("-", "_")
-        self.logger.debug(f"project = {self.project}")
-        self.logger.debug(f"package = {self.package}")
+        if self.project == "":
+            self._get_project_package_from_cwd()
         return
 
     def _get_name_from_gitconfig(self: Project) -> None:
@@ -452,7 +444,20 @@ class Project:
                 self.repository = url
             else:
                 self.repository = ""
+        if self.repository != "":
+            project_dir: str = self.repository.split("/")[-1]
+            self.project = project_dir.replace("_", "-")
+            self.package = project_dir.replace("-", "_")
         self.logger.debug(f"repository = {self.repository}")
+        return
+
+    def _get_project_package_from_cwd(self: Project) -> None:
+        cwd: Path = Path.cwd()
+        project_dir: str = cwd.name
+        self.project = project_dir.replace("_", "-")
+        self.package = project_dir.replace("-", "_")
+        self.logger.debug(f"project = {self.project}")
+        self.logger.debug(f"package = {self.package}")
         return
 
     def _get_pyenv_versions(self: Project) -> List[str]:

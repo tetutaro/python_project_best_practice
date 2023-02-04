@@ -8,7 +8,33 @@
 * 開発の助けになるよう、自動文法チェック・自動プログラム整形・自動プログラム補完・ユニットテスト・自動ドキュメント生成が出来るような環境を構築する
 * Python 仮想環境の設定は、[PEP 518](https://peps.python.org/pep-0518/) にあるように、なるべく全てを pyproject.toml に一元的に記述し、それのみを参照すれば良いようにする
 
-このドキュメントで `> hoge` という記述は、ターミナルで "hoge" というコマンドを打つ、ということ。
+以下の文章で `> hoge` という記述は、ターミナルで "hoge" というコマンドを打つ、ということ。
+
+# 新規 Python プロジェクトの作成
+
+* 準備の準備、準備がすべて完了している
+* GitHab もしくは GitLab で repository を作る
+    * repository の名前には `-` （ハイフン）は使わず、`_`（アンダースコア）を使うものとする
+* 作った repository をローカルに clone する
+* clone したディレクトリに移動
+* この repository の setup.sh を叩く
+
+setup.sh を叩くコマンド（コピーして使用する用）
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup.sh)"
+```
+
+# 既存プロジェクトに参加する
+
+* 準備の準備、準備がすべて完了している
+* repository を clone する
+* clone したディレクトリに移動
+* この repository の update.sh を叩く
+
+update.sh を叩くコマンド（コピーして使用する用）
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/update.sh)"
+```
 
 # 準備の準備
 
@@ -38,7 +64,7 @@
 
 Python の仮想環境は pyenv で管理を行う。また、pyproject.toml に情報を一元化するため、Python パッケージの管理には poetry を用いる。ここではこれらのインストール・設定を行う。
 
-## Python 仮想環境管理ツール pyenv, poetry をインストールする
+## pyenv, poetry のインストール
 
 * pyenv のインストール
     * `> git clone https://github.com/pyenv/pyenv.git ~/.pyenv`
@@ -89,23 +115,7 @@ eval "$(pyenv virtualenv-init -)"
 * `> pyenv versions`
     * インストール済みのバージョン一覧を表示
 
-# 新規プロジェクトの作成
-
-新しくプロジェクトを始める場合に、仮想環境を作り、その設定と基本となるパッケージのインストールを行う方法をまとめる。
-
-## 新規 Python 仮想環境の作成
-
-* GitHab もしくは GitLab で repository を作成する
-    * 名前を `sample_project` とする
-    * この名前には `-` （ハイフン）は使わず、`_`（アンダースコア）を使うことにする
-* 作った repository をローカルに clone する
-    * `git clone <repository_git_url>`
-    * current directory の下に `sample_project` というディレクトリが出来る
-* clone したディレクトリ（`sample_project`）に移動
-* この repository の setup.sh を叩く
-    * `>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup.sh)"`
-
-### flake8 の設定のみが .flake8 に書いてある件について
+### （余談）flake8 の設定のみが .flake8 に書いてある件について
 
 * 一番最初に「なるべく設定を pyproject.toml にまとめる」と書いた
 * 上記の setup.py を実行すると全ての環境設定・必要なパッケージのインストールが行われるが、flake8 の設定だけは .flake8 になっている
@@ -114,18 +124,32 @@ eval "$(pyenv virtualenv-init -)"
 * なので、残念ながら flake8 の設定だけは .flake8 に記述することにする
     * [flake9](https://pypi.org/project/flake9/) というものもあるが、こちらが安定して動くようなら、切り替えても良いかもしれない
 
-## プロジェクトの開発進行
+# プロジェクトの開発進行
 
-次にプロジェクトの進め方（開発方法）をまとめる。
+プロジェクトの進め方（開発方法）をまとめる。
 
-### パッケージの追加
+## パッケージの追加
 
 * 動作に必要なパッケージ
     * `> poetry add <package>`
 * 開発に必要なパッケージ
     * `> poetry add --group dev <package>`
 
-### バージョン番号を更新する
+## ユニットテストおよび文法チェック・型チェックを行う
+
+* `> make tests`
+
+## 自動生成されるドキュメントを更新する
+
+* `> make docs`
+
+## requirements.txt を更新する
+
+Docker container を作るなど、必要な時に。
+
+* `> make requirements`
+
+## バージョン番号を更新して push する
 
 * 変更を登録して commit する、もしくは branch から merge する
     * 変更の登録とコミット
@@ -144,26 +168,6 @@ eval "$(pyenv virtualenv-init -)"
     * `> git tag`
     * `> poetry version`
     * 先頭の `v` を除いたバージョン番号が得られる
-
-### ユニットテストおよび文法チェック・型チェックを行う
-
-* `> make tests`
-
-### 自動生成されるドキュメントを更新する
-
-* `> make docs`
-
-# poetry を使っている既存プロジェクトに JOIN する
-
-既存プロジェクトに途中から JOIN する場合は、既にある repository を引っ張ってきて、それに合わせた環境構築が必要になる。
-
-* repository を clone する
-    * repository の名前を `sample_project` とする
-    * git clone する
-    * current directory の下に `sample_project` というディレクトリが出来る
-* clone したディレクトリ（`sample_project`）に移動
-* この repository の update.sh を叩く
-    * `>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/update.sh)"`
 
 # 途中から poetry を使う
 
