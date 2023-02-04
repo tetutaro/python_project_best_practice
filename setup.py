@@ -600,7 +600,7 @@ class Project:
             "Makefile",
             ".flake8",
             ".gitignore",
-            f"{self.project}",
+            f"{self.package}",
             "tests",
             "docs",
         ]
