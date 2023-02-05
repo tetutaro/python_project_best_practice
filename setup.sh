@@ -24,10 +24,8 @@ pyenv_version=$(python3 ${setup_py} project_python)
 pyenv local ${pyenv_version}
 pyenv shell ${pyenv_version}
 pip install --upgrade pip setuptools wheel
+poetry install
 python3 ${setup_py} create_basic_files
-dev_packages=$(python3 ${setup_py} get_dev_packages)
-echo ${dev_packages}
-poetry add --group dev ${dev_packages}
 quick_cmnd=$(python3 ${setup_py} get_sphinx_command)
 cd docs >/dev/null 2>&1
 ${quick_cmnd}

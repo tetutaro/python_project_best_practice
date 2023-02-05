@@ -22,6 +22,19 @@ packages = [{{include = "{PACKAGE}"}}]
 [tool.poetry.dependencies]
 python = "^{PYVERSION}"
 
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+flake8 = "4.0.1"
+mypy = "^0.991"
+pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
+pytest-flake8 = "^1.1.1"
+pytest-mypy = "^0.10.3"
+sphinx = "^6.1.3"
+sphinx-rtd-theme = "1.2.0rc2"
+sphinx-pyproject-poetry = {git = "https://github.com/tetutaro/sphinx_pyproject_poetry.git"}
+python-lsp-server = "^1.7.1"
+
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry_dynamic_versioning.backend"
@@ -366,25 +379,6 @@ def linkcode_resolve(
 """
 
 
-DEV_PACKAGES: List[Dict[str, str]] = [
-    {"name": "black"},
-    {"name": "flake8", "version": "4.0.1"},
-    {"name": "coverage"},
-    {"name": "mypy"},
-    {"name": "pytest"},
-    {"name": "pytest-flake8"},
-    {"name": "pytest-cov"},
-    {"name": "pytest-mypy"},
-    {"name": "sphinx"},
-    {"name": "sphinx-rtd-theme", "version": "1.2.0rc2"},
-    {
-        "name": "sphinx-pyproject-poetry",
-        "git": "https://github.com/tetutaro/sphinx_pyproject_poetry.git",
-    },
-    {"name": "python-lsp-server"},
-]
-
-
 class Project:
     project: str = ""
     package: str = ""
@@ -543,23 +537,6 @@ class Project:
         test_init.touch()
         return
 
-    def get_dev_packages(self: Project) -> None:
-        packages: List[str] = list()
-        for pkg in DEV_PACKAGES:
-            git: Optional[str] = pkg.get("git")
-            if git is not None:
-                packages.append(f"git+{git}")
-                continue
-            name: Optional[str] = pkg.get("name")
-            if name is None:
-                continue
-            version: Optional[str] = pkg.get("version")
-            if version is not None:
-                name += f"={version}"
-            packages.append(name)
-        print(" ".join(packages))
-        return
-
     def get_sphinx_command(self: Project) -> None:
         base: Path = Path.cwd()
         docs: Path = base.joinpath("docs")
@@ -620,7 +597,6 @@ def main() -> None:
             "create_pyproject",
             "project_python",
             "create_basic_files",
-            "get_dev_packages",
             "get_sphinx_command",
             "setup_sphinx",
             "get_update_files",
@@ -643,8 +619,6 @@ def main() -> None:
             project.get_project_python()
         elif args.action == "create_basic_files":
             project.create_basic_files()
-        elif args.action == "get_dev_packages":
-            project.get_dev_packages()
         elif args.action == "get_sphinx_command":
             project.get_sphinx_command()
         elif args.action == "setup_sphinx":
