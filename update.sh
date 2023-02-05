@@ -24,7 +24,6 @@ pyenv_version=$(python3 ${update_py} project_python)
 pyenv local ${pyenv_version}
 pyenv shell ${pyenv_version}
 pip install --upgrade pip setuptools wheel
-poetry install
 delete_update_py
 
 set +eu
