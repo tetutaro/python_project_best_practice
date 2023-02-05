@@ -473,7 +473,7 @@ class Project:
         nvs = sorted(nvs, key=lambda x: (x[0], x[1], x[2]), reverse=True)
         return ".".join([str(x) for x in nvs[0]])
 
-    def create_pyproject(self: Project) -> None:
+    def create_pyproject(self: Project, create: bool = True) -> None:
         virtualenvs: List[str] = self._get_pyenv_versions()
         python3_venvs: List[str] = list()
         for venv in virtualenvs:
@@ -483,19 +483,20 @@ class Project:
             raise SystemError("python3 virtuanenv is not found")
         latest_venv = self._get_largest_version(python3_venvs)
         self.pyversion = ".".join(x for x in latest_venv.split(".")[:2])
-        year = datetime.now().strftime("%Y")
-        pyproject: Path = Path.cwd().joinpath("pyproject.toml")
-        with open(pyproject, "wt") as wf:
-            wf.write(
-                PYPROJECT.format(
-                    PROJECT=self.project,
-                    PACKAGE=self.package,
-                    NAME=self.name,
-                    REPOSITORY=self.repository,
-                    PYVERSION=self.pyversion,
-                    YEAR=year,
+        if create:
+            year = datetime.now().strftime("%Y")
+            pyproject: Path = Path.cwd().joinpath("pyproject.toml")
+            with open(pyproject, "wt") as wf:
+                wf.write(
+                    PYPROJECT.format(
+                        PROJECT=self.project,
+                        PACKAGE=self.package,
+                        NAME=self.name,
+                        REPOSITORY=self.repository,
+                        PYVERSION=self.pyversion,
+                        YEAR=year,
+                    )
                 )
-            )
         print(latest_venv)
         return
 
@@ -595,6 +596,7 @@ def main() -> None:
         "action",
         choices=[
             "create_pyproject",
+            "latest_venv",
             "project_python",
             "create_basic_files",
             "get_sphinx_command",
@@ -614,7 +616,9 @@ def main() -> None:
     try:
         project: Project = Project(logger=logger)
         if args.action == "create_pyproject":
-            project.create_pyproject()
+            project.create_pyproject(create=True)
+        elif args.action == "latest_venv":
+            project.create_pyproject(create=False)
         elif args.action == "project_python":
             project.get_project_python()
         elif args.action == "create_basic_files":
