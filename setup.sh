@@ -19,7 +19,7 @@ eval "$(pyenv virtualenv-init -)"
 download_setup_py
 shell_version=$(python3 ${setup_py} create_pyproject)
 pyenv shell ${shell_version}
-poetry update
+poetry shell
 pyenv_version=$(python3 ${setup_py} project_python)
 pyenv local ${pyenv_version}
 pyenv shell ${pyenv_version}
