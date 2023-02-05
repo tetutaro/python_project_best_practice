@@ -169,11 +169,30 @@ Docker container を作るなど、必要な時に。
     * `> poetry version`
     * 先頭の `v` を除いたバージョン番号が得られる
 
+# 特殊なケース
+
+通常は GitHub もしくは GitLab に remote repository を作成してから
+プロジェクトを開始するが、それに当てはまらない特殊な場合。
+
+## git repository を作らない場合
+
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup_local.sh)"
+```
+
+上記を行った後に、poetry shell で仮想環境を作り、poetry install でパッケージのインストール、pyenv local で仮想環境の登録が必要になる。
+
+## 後から sphinx の設定を行う場合
+
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup_sphinx.sh)"
+```
+
 # 途中から poetry を使う
 
-既存のプロジェクトでは、今まで poetry を使っていないこともあるだろう。そのプロジェクトに誰かが途中から加わる場合、環境構築がめんどくさい。そこでまずは、そのプロジェクトで poetry を使う（pyproject.toml を生成する）ように設定する。
+既存のプロジェクトでは、今まで poetry を使っていないこともある。そのプロジェクトに誰かが途中から加わる場合、環境構築がめんどくさい。そこでまずは、そのプロジェクトで poetry を使う（pyproject.toml を生成する）ように設定する。
 
-以下の操作は既存プロジェクトで既にメンバーになっている人がやるべきで、新しく JOIN する人はこれら修正・変更が終わってから環境構築をすべきである。
+以下の操作は既存プロジェクトで既にメンバーになっている人がやるべきで、新しく参加する人はこれら修正・変更が終わってから環境構築をする。
 
 ## GitHub, GitLab を使っていない場合
 
