@@ -174,19 +174,30 @@ Docker container を作るなど、必要な時に。
 通常は GitHub もしくは GitLab に remote repository を作成してから
 プロジェクトを開始するが、それに当てはまらない特殊な場合。
 
-## git repository を作らない場合
+## remote repository を作らない場合
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup_local.sh)"
 ```
 
-上記を行った後に、poetry shell で仮想環境を作り、poetry install でパッケージのインストール、pyenv local で仮想環境の登録が必要になる。
+上記を行った後に必要な作業
+
+* local repository の作成
+    * `> git init`
+* Python 仮想環境の作成
+    * `> poetry shell`
+* 開発用パッケージのインストール
+    * `> poetry install`
+* Python 仮想環境の設定
+    * `> pyenv local [project]-XXX-pyXX`
 
 ## 後から sphinx の設定を行う場合
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tetutaro/python_project_best_practice/main/setup_sphinx.sh)"
 ```
+
+remote repository が無い状態のままだと、`docs/source/conf.py` がローカルのファイルを参照する設定になることに注意すること。
 
 # 途中から poetry を使う
 
