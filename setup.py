@@ -32,7 +32,7 @@ pytest-flake8 = "^1.1.1"
 pytest-mypy = "^0.10.3"
 sphinx = "^6.1.3"
 sphinx-rtd-theme = "1.2.0rc2"
-sphinx-pyproject-poetry = {{git = "https://github.com/tetutaro/sphinx_pyproject_poetry.git"}}
+sphinx-pyproject-poetry = {git = "https://github.com/tetutaro/sphinx_pyproject_poetry.git"}
 python-lsp-server = "^1.7.1"
 
 [build-system]
