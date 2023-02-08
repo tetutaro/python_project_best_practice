@@ -97,7 +97,6 @@ eval "$(pyenv virtualenv-init -)"
 ## pyenv, poetry 自体のアップデート
 
 * `> pyenv update`
-* `> cd ~/.pyenv/plugins/pyenv-virtualenv && git pull`
 * `> poetry self update`
 
 ## 特定バージョンの Python をインストールする
