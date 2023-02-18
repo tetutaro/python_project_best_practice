@@ -307,7 +307,7 @@ max-line-length = 79
 max-complexity = 15
 per-file-ignores =
     *.pyi: E302, E501
-extend-ignore = E203
+extend-ignore = E203, W503
 """  # noqa: E191
 
 INIT_PY: str = """#!/usr/bin/env python3
